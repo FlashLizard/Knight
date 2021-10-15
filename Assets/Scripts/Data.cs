@@ -26,50 +26,24 @@ public enum BulletId
     Normal,
 
 }
-struct BulletData
-{
-    public string name;
-    public float radius;
-    public BulletData(string name,float radius)
-    {
-        this.name = name;
-        this.radius = radius;
-    }
-}
-struct EquipData
-{
-    public string name;
-    public EquipType type;
-    public EquipQuality quality;
-    public BulletId bulletId;
-    public float interval;
-    public EquipData(string name, EquipType type, EquipQuality quality, BulletId bulletId,float interval)
-    {
-        this.name = name;
-        this.type = type;
-        this.quality = quality;
-        this.bulletId = bulletId;
-        this.interval = interval;
-    }
-}
 static class Data
 {
     public static EquipData[] equipments = 
-        { new EquipData("OrignalPistol",EquipType.Gum,EquipQuality.White,BulletId.Normal,0.5f),
-    new EquipData("BigSword",EquipType.Sword,EquipQuality.White,BulletId.Normal,0.8f) };
+        { new Gum(EquipId.OrignalPistol,"OrignalPistol",EquipQuality.White,1,0.5f,BulletId.Normal,20),
+    new Sword(EquipId.BigSword,"BigSword",EquipQuality.White,1,0.8f) };
     public static BulletData[] bullets =
          { new BulletData("Normal",0.2f) };
     public static string GetImage(EquipId id)
     {
-        return @"Equipments/" + equipments[(int)id-1].name;
+        return @"Equipments/" + equipments[(int)id-1].Name;
     }
     public static string GetName(EquipId id)
     {
-        return equipments[(int)id-1].name;
+        return equipments[(int)id-1].Name;
     }
     public static string GetImage(BulletId id)
     {
-        return @"Bullets/" + bullets[(int)id - 1].name;
+        return @"Bullets/" + bullets[(int)id].Name;
     }
     public static void FreshImage(GameObject gameObject,string image)
     {

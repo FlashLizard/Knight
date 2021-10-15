@@ -5,27 +5,31 @@ using UnityEngine;
 public class Bullet:MonoBehaviour
 {
     float _speed;
-    int _demage,_id;
-    Vector2 _direction;
+    int _demage;
+    //BulletId _id;
+    //EquipId _gumId;
+    //Vector2 _direction;
     [SerializeField]
     Rigidbody2D rb;
+    GameObject parent;
+    CircleCollider2D coll;
 
-    public Vector2 Direction { get => _direction; set => _direction = value; }
+    //public Vector2 Direction { get => _direction; set => _direction = value; }
     public int Demage { get => _demage; set => _demage = value; }
     public float Speed { get => _speed; set => _speed = value; }
-    public int Id { get => _id; set => _id = value; }
+    //public BulletId Id { get => Id; set => Id = value; }
+    //public EquipId GumId { get => _gumId; set => _gumId = value; }
 
-    public Bullet(int id,int demage,float speed,Vector2 direction,Vector2 position)
+    public void Fire(EquipId gumId,Vector2 direction,Vector2 position)
     {
-        transform.position = position;
-        this.Id = id;
-        this.Demage = demage;
-        this.Speed = speed;
-        this.Direction = direction;
-    }
-
-    void Fly()
-    {
-
+        this.Demage = Data.equipments[(int)gumId-1].Demage;
+        this.Speed = ((Gum)Data.equipments[(int)gumId - 1]).Speed;
+        BulletId id = ((Gum)Data.equipments[(int)gumId - 1]).BulletId;
+        rb.velocity = Speed*direction;
+        gameObject.transform.position = position;
+        Data.FreshImage(gameObject, Data.GetImage(id));
+        coll = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
+        coll.radius = Data.bullets[(int)id].Radius;
+        //transform.rotation = ;
     }
 }

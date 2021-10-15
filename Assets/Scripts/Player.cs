@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//using UnityEngine.UIElements;
 
 public class Player : Animal,IGetHurtable
 {
     int _magic, _money, _defence;
     EquipId _equipment, _subEquipment,_toEquipment;
-    bool _skilling, _hurt,_exchange;
+    bool _skilling, _hurt,_exchange,_attacking;
+    Vector2 _toMouse;
     [SerializeField]
     GameObject skill,mainHand,subHand;
 
@@ -15,10 +17,12 @@ public class Player : Animal,IGetHurtable
     public int Defence { get => _defence; set => _defence = value; }
     public bool Skilling { get => _skilling; set => _skilling = value; }
     public bool Hurt { get => _hurt; set => _hurt = value; }
+    public bool Exchange { get => _exchange; set => _exchange = value; }
+    public bool Attacking { get => _attacking; set => _attacking = value; }
     public EquipId Equipment { get => _equipment; set => _equipment = value; }
     public EquipId SubEquipment { get => _subEquipment; set => _subEquipment = value; }
     public EquipId ToEquipment { get => _toEquipment; set => _toEquipment = value; }
-    public bool Exchange { get => _exchange; set => _exchange = value; }
+    public Vector2 ToMouse { get => _toMouse; set => _toMouse = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -81,6 +85,7 @@ public class Player : Animal,IGetHurtable
     {
         if (Input.GetButtonDown("Skill")) Skilling = true;
         if (Input.GetButtonDown("Exchange")) Exchange = true;
+        if (Input.GetButtonDown("Fire1")) Attacking = true;
     }
 
     public void GetHurt(int demage)
@@ -98,6 +103,19 @@ public class Player : Animal,IGetHurtable
             Skill();
         }
         if (Exchange) ChangeEquipment();
+        if(Attacking)
+        {
+            //ToMouse = new Vector2(0.6f, 0.8f);
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 direction = Vector3.Normalize(new Vector3(position.x - transform.position.x, position.y - transform.position.y, 0));
+            ToMouse =new Vector2(direction.x,direction.y);
+            Attack();
+            Attacking = false;
+        }
+    }
 
+    void Attack()
+    {
+        Data.equipments[(int)Equipment-1].Attack(gameObject);
     }
 }
