@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Equipment : MonoBehaviour
+public class Equipment
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    int _id;
 
-    // Update is called once per frame
-    void Update()
+
+    public int Id { get => _id<0?0:_id; set => _id = value; }
+
+    public static string GetImage()
     {
-        
+        return "";
+    }
+    public static string GetName()
+    {
+        return "";
     }
 }

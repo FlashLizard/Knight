@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IGetHurtable
 {
-    void GetHurt();
+    void GetHurt(int demage);
 }

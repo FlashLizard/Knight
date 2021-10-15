@@ -5,30 +5,35 @@ using UnityEngine;
 public class Player : Animal,IGetHurtable
 {
     int _magic, _money, _defence;
-    Equipment _equipment, _subEquipment;
-    bool _skilling, _hurt;
+    EquipId _equipment, _subEquipment,_toEquipment;
+    bool _skilling, _hurt,_exchange;
     [SerializeField]
-    GameObject skill;
+    GameObject skill,mainHand,subHand;
 
     public int Magic { get => _magic; set => _magic = value; }
     public int Money { get => _money; set => _money = value; }
     public int Defence { get => _defence; set => _defence = value; }
-    public Equipment Equipment { get => _equipment; set => _equipment = value; }
-    public Equipment SubEquipment { get => _subEquipment; set => _subEquipment = value; }
     public bool Skilling { get => _skilling; set => _skilling = value; }
     public bool Hurt { get => _hurt; set => _hurt = value; }
+    public EquipId Equipment { get => _equipment; set => _equipment = value; }
+    public EquipId SubEquipment { get => _subEquipment; set => _subEquipment = value; }
+    public EquipId ToEquipment { get => _toEquipment; set => _toEquipment = value; }
+    public bool Exchange { get => _exchange; set => _exchange = value; }
 
     // Start is called before the first frame update
     void Start()
     {
         Init();
         Skilling = Hurt = false;
+        this.Equipment = EquipId.OrignalPistol;
+        this.SubEquipment = EquipId.BigSword;
+        this.ToEquipment= EquipId.Null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        getInput();
+        GetInput();
     }
 
     private void FixedUpdate()
@@ -54,7 +59,15 @@ public class Player : Animal,IGetHurtable
 
     void ChangeEquipment()
     {
-
+        if(SubEquipment!=EquipId.Null)
+        {
+            EquipId temp = this.SubEquipment;
+            this.SubEquipment = this.Equipment;
+            this.Equipment = temp;
+            Data.FreshImage(mainHand, Data.GetImage(this.Equipment));
+            Data.FreshImage(subHand, Data.GetImage(this.SubEquipment));
+        }
+        Exchange = false;
     }
 
     void Movement()
@@ -64,12 +77,13 @@ public class Player : Animal,IGetHurtable
         Move(horizontalMove * Speed, verticalMove * Speed);
     }
 
-    void getInput()
+    void GetInput()
     {
         if (Input.GetButtonDown("Skill")) Skilling = true;
+        if (Input.GetButtonDown("Exchange")) Exchange = true;
     }
 
-    public void GetHurt()
+    public void GetHurt(int demage)
     {
         
     }
@@ -78,6 +92,12 @@ public class Player : Animal,IGetHurtable
     {
         float x = Rb.velocity.x, y = Rb.velocity.y;
         Anim.SetFloat("Moving", Mathf.Sqrt(x * x + y * y));
-        if(Skilling) skill.SetActive(true);
+        if (Skilling)
+        {
+            skill.SetActive(true);
+            Skill();
+        }
+        if (Exchange) ChangeEquipment();
+
     }
 }
