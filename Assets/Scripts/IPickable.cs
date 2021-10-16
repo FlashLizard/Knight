@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IGetHurtable
+public interface IPickable
 {
-    void GetHurt(int demage);
-    void Dead();
+    void Pick(EquipId id);
 }

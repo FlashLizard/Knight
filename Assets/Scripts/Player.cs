@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 //using UnityEngine.UIElements;
 
-public class Player : Animal,IGetHurtable
+public class Player : Animal,IGetHurtable,IPickable
 {
     int _magic, _money, _defence;
-    EquipId _equipment, _subEquipment,_toEquipment;
-    bool _skilling, _hurt,_exchange,_attacking;
+    EquipId _equipment, _subEquipment;
+    bool _skilling, _hurt, _exchange, _attacking, _filling, _use, _test;
     Vector2 _toMouse;
+    [SerializeField]
+    Item _toItem;
     [SerializeField]
     GameObject skill,mainHand,subHand;
 
@@ -21,8 +23,11 @@ public class Player : Animal,IGetHurtable
     public bool Attacking { get => _attacking; set => _attacking = value; }
     public EquipId Equipment { get => _equipment; set => _equipment = value; }
     public EquipId SubEquipment { get => _subEquipment; set => _subEquipment = value; }
-    public EquipId ToEquipment { get => _toEquipment; set => _toEquipment = value; }
     public Vector2 ToMouse { get => _toMouse; set => _toMouse = value; }
+    public bool Filling { get => _filling; set => _filling = value; }
+    public Item ToItem { get => _toItem; set => _toItem = value; }
+    public bool Use { get => _use; set => _use = value; }
+    public bool Test { get => _test; set => _test = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -30,8 +35,7 @@ public class Player : Animal,IGetHurtable
         Init();
         Skilling = Hurt = false;
         this.Equipment = EquipId.OrignalPistol;
-        this.SubEquipment = EquipId.BigSword;
-        this.ToEquipment= EquipId.Null;
+        //this.SubEquipment = EquipId.BigSword;
     }
 
     // Update is called once per frame
@@ -61,6 +65,21 @@ public class Player : Animal,IGetHurtable
 
     }
 
+    public void Pick(EquipId id)
+    {
+        if (SubEquipment == EquipId.Null)
+        {
+            SubEquipment = id;
+            Exchange = true;
+        }
+        else
+        {
+            PickEquip.Create(Equipment, transform.position);
+            Equipment = id;
+            Data.FreshImage(mainHand, Data.GetImage(id));
+        }
+    }
+
     void ChangeEquipment()
     {
         if(SubEquipment!=EquipId.Null)
@@ -72,6 +91,7 @@ public class Player : Animal,IGetHurtable
             Data.FreshImage(subHand, Data.GetImage(this.SubEquipment));
         }
         Exchange = false;
+        FillFinish();
     }
 
     void Movement()
@@ -85,7 +105,9 @@ public class Player : Animal,IGetHurtable
     {
         if (Input.GetButtonDown("Skill")) Skilling = true;
         if (Input.GetButtonDown("Exchange")) Exchange = true;
-        if (Input.GetButtonDown("Fire1")) Attacking = true;
+        if (Input.GetButtonDown("Use")) Use = true;
+        if (Input.GetButtonDown("Test")) Test = true;
+        if (Input.GetButton("Fire1")) Attacking = true;
     }
 
     public void GetHurt(int demage)
@@ -112,10 +134,26 @@ public class Player : Animal,IGetHurtable
             Attack();
             Attacking = false;
         }
+        if(Use)
+        {
+            if (ToItem != null) ToItem.Interactive(gameObject);
+            Use = false;
+        }
+        if(Test)
+        {
+            Box.Create(transform.position);
+            Test = false;
+        }
     }
-
+    void FillFinish()
+    {
+        Filling=false;
+    }
     void Attack()
     {
-        Data.equipments[(int)Equipment-1].Attack(gameObject);
+        if (Filling) return;
+        Filling = true;
+        Data.Get(Equipment).Attack(gameObject);
+        Invoke("FillFinish", Data.Get(Equipment).Interval);
     }
 }

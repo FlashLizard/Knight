@@ -18,7 +18,6 @@ public class Gum : EquipData
 
     public override void Attack(GameObject Player)
     {
-        GameObject newBullet = Object.Instantiate(Resources.Load<GameObject>("Prefabs/BulletSample"));
-        newBullet.GetComponent<Bullet>().Fire(this.Id,Player.GetComponent<Player>().ToMouse,Player.transform.position);
+        Bullet.Create(BulletId,this.Demage,this.Speed, Player.GetComponent<Player>().ToMouse, Player.transform.position);
     }
 }

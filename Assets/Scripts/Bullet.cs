@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bullet:MonoBehaviour
 {
-    float _speed;
+    //float _speed;
     int _demage;
     //BulletId _id;
     //EquipId _gumId;
@@ -16,20 +16,29 @@ public class Bullet:MonoBehaviour
 
     //public Vector2 Direction { get => _direction; set => _direction = value; }
     public int Demage { get => _demage; set => _demage = value; }
-    public float Speed { get => _speed; set => _speed = value; }
+    //public float Speed { get => _speed; set => _speed = value; }
     //public BulletId Id { get => Id; set => Id = value; }
     //public EquipId GumId { get => _gumId; set => _gumId = value; }
 
-    public void Fire(EquipId gumId,Vector2 direction,Vector2 position)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        this.Demage = Data.equipments[(int)gumId-1].Demage;
-        this.Speed = ((Gum)Data.equipments[(int)gumId - 1]).Speed;
-        BulletId id = ((Gum)Data.equipments[(int)gumId - 1]).BulletId;
-        rb.velocity = Speed*direction;
-        gameObject.transform.position = position;
-        Data.FreshImage(gameObject, Data.GetImage(id));
-        coll = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
-        coll.radius = Data.bullets[(int)id].Radius;
-        //transform.rotation = ;
+        
+        if(collision.tag=="Destruction")
+        {
+            Debug.Log(collision.tag);
+            collision.GetComponent<IGetHurtable>().GetHurt(Demage);
+            Destroy(gameObject);
+        }
+    }
+    public static void Create(BulletId id,int demage,float speed,Vector2 direction,Vector2 position)
+    {
+        GameObject newBullet = Object.Instantiate(Resources.Load<GameObject>("Prefabs/BulletSample"),position,new Quaternion(0,0,0,1));
+        Bullet bullet = newBullet.GetComponent<Bullet>();
+        bullet.Demage = demage;
+        newBullet.GetComponent<Rigidbody2D>().velocity = speed*direction;
+        Data.FreshImage(newBullet, Data.GetImage(id));
+        CircleCollider2D coll = newBullet.AddComponent<CircleCollider2D>() as CircleCollider2D;
+        coll.radius = Data.Get(id).Radius;
+        coll.isTrigger = true;
     }
 }
