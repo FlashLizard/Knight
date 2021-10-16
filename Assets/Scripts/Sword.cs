@@ -8,7 +8,7 @@ public class Sword : EquipData
         base(id,name, EquipType.Sword, quality, demage, depletion,interval)
     {
     }
-    public override void Attack(GameObject Player)
+    public override void Attack(GameObject Hand, Vector2 derection)
     {
 
     }

@@ -16,8 +16,8 @@ public class Gum : EquipData
     public BulletId BulletId { get => _bulletId; set => _bulletId = value; }
     public int Speed { get => _speed; set => _speed = value; }
 
-    public override void Attack(GameObject Player)
+    public override void Attack(GameObject Hand,Vector2 derection)
     {
-        Bullet.Create(BulletId,this.Demage,this.Speed, Player.GetComponent<Player>().ToMouse, Player.transform.position);
+        Bullet.Create(BulletId,this.Demage,this.Speed, derection, Hand.transform.position);
     }
 }

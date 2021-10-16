@@ -40,6 +40,7 @@ public enum BulletId
 }
 static class Data
 {
+    public static GameObject player;
     public static EquipData[] equipments =
         { new Gum(EquipId.OrignalPistol,"OrignalPistol",EquipQuality.White,1,2,0.5f,BulletId.Normal,20),
     new Sword(EquipId.BigSword,"BigSword",EquipQuality.White,1,0,0.8f) };
@@ -96,5 +97,26 @@ static class Data
     public static GameObject produce(string name,Vector2 position)
     {
         return Object.Instantiate(Resources.Load<GameObject>("Prefabs/"+name), position, new Quaternion(0, 0, 0, 1));
+    }
+    public static Vector2 randomPos(Vector2 position,float delta)
+    {
+        return new Vector2(position.x + (0.5f - Random.value) * delta, position.y + (0.5f - Random.value)*delta);
+    }
+    public static void Move(Rigidbody2D rb,float toX,float toY)
+    {
+        rb.velocity = new Vector2(toX * Time.fixedDeltaTime, toY * Time.fixedDeltaTime);
+    }
+    public static GameObject FreshPlayer()
+    {
+        return player = GameObject.Find("Player");
+    }
+    public static GameObject GetPlayer()
+    {
+        if (player == null) return FreshPlayer();
+        return player;
+    }
+    public static Vector2 ToPlayer(Vector2 position)
+    {
+        return Normalize(ThreeToTwo(GetPlayer().transform.position)-position);
     }
 }

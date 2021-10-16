@@ -29,5 +29,5 @@ public abstract class EquipData
         this.Demage = demage;
         this.Depletion = depletion;
     }
-    public abstract void Attack(GameObject Player);
+    public abstract void Attack(GameObject Hand, Vector2 derection);
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4927219898524307384}
   - component: {fileID: 4927219898524307385}
   - component: {fileID: 4927219898524307387}
+  - component: {fileID: 1842613787}
   m_Layer: 0
   m_Name: MagicSample
   m_TagString: Untagged
@@ -139,3 +140,22 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 4
+--- !u!95 &1842613787
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4927219898524307380}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 71188f5649a14544bbbc624f8f85b872, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

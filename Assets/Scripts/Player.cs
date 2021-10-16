@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Player : Animal,IGetHurtable,IPickable
 {
+    #region Define
     int _magic, _money, _defence;
     EquipId _equipment, _subEquipment;
     bool _skilling, _hurt, _exchange, _attacking, _filling, _use, _test;
@@ -17,6 +18,7 @@ public class Player : Animal,IGetHurtable,IPickable
     [SerializeField]
     Slider healthUI, magicUI, defenceUI;
 
+    
     public int Magic
     { 
         get => _magic;
@@ -56,46 +58,37 @@ public class Player : Animal,IGetHurtable,IPickable
     public Item ToItem { get => _toItem; set => _toItem = value; }
     public bool Use { get => _use; set => _use = value; }
     public bool Test { get => _test; set => _test = value; }
-
-    // Start is called before the first frame update
+    #endregion
     void Start()
     {
         Init();
         Skilling = Hurt = false;
         this.Equipment = EquipId.OrignalPistol;
+        Speed = 500;
         Magic = 180;
         Health = 5;
         Defence = 5;
         //this.SubEquipment = EquipId.BigSword;
     }
-
-    // Update is called once per frame
     void Update()
     {
         GetInput();
     }
-
     private void FixedUpdate()
     {
         Movement();
         ToAnimator();
     }
-
     void Skill()
     {
-        if(skillHand==null) skillHand = Instantiate(mainHand);
+        Data.FreshImage(skillHand, Data.GetImage(Equipment));
+        skill.SetActive(true);
+        Invoke("SkillFinish", 10f);
     }
-
-    void GetMoney()
+    public override void Dead()
     {
-
+        
     }
-
-    void GetMagic()
-    {
-
-    }
-
     public void Pick(EquipId id)
     {
         if (SubEquipment == EquipId.Null)
@@ -110,7 +103,6 @@ public class Player : Animal,IGetHurtable,IPickable
             Data.FreshImage(mainHand, Data.GetImage(id));
         }
     }
-
     void ChangeEquipment()
     {
         if(SubEquipment!=EquipId.Null)
@@ -124,45 +116,42 @@ public class Player : Animal,IGetHurtable,IPickable
         Exchange = false;
         FillFinish();
     }
-
     void Movement()
     {
         float horizontalMove = Input.GetAxis("Horizontal");
         float verticalMove = Input.GetAxis("Vertical");
-        Move(horizontalMove * Speed, verticalMove * Speed);
+        Move(horizontalMove, verticalMove);
     }
-
+    public void SkillFinish()
+    {
+        Skilling = false;
+        skillHand.GetComponent<SpriteRenderer>().sprite = null;
+        skill.SetActive(false);
+    }
     void GetInput()
     {
-        if (Input.GetButtonDown("Skill")) Skilling = true;
+        if (Input.GetButtonDown("Skill") && (!Skilling)) Skilling = true;
         if (Input.GetButtonDown("Exchange")) Exchange = true;
         if (Input.GetButtonDown("Use")) Use = true;
         if (Input.GetButtonDown("Test")) Test = true;
         if (Input.GetButton("Fire1")) Attacking = true;
     }
-
-    public void GetHurt(int demage)
+    public override void GetHurt(int demage)
     {
         
     }
-
     void ToAnimator()
     {
         float x = Rb.velocity.x, y = Rb.velocity.y;
         Anim.SetFloat("Moving", Mathf.Sqrt(x * x + y * y));
-        if (Skilling)
+        if (Skilling&&!skill.activeSelf)
         {
-            skill.SetActive(true);
             Skill();
         }
         if (Exchange) ChangeEquipment();
         if(Attacking)
         {
-            //ToMouse = new Vector2(0.6f, 0.8f);
-            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            ToMouse =Data.Normalize(position-transform.position);
             Attack();
-            Attacking = false;
         }
         if(Use)
         {
@@ -182,10 +171,14 @@ public class Player : Animal,IGetHurtable,IPickable
     void Attack()
     {
         int depletion = Data.Get(Equipment).Depletion;
+        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        ToMouse = Data.Normalize(position - transform.position);
         if (Filling||Magic<depletion) return;
         Magic -= depletion;
         Filling = true;
-        Data.Get(Equipment).Attack(gameObject);
+        Data.Get(Equipment).Attack(mainHand,ToMouse);
+        if(Skilling) Data.Get(Equipment).Attack(skillHand,ToMouse);
         Invoke("FillFinish", Data.Get(Equipment).Interval);
+        Attacking = false;
     }
 }
