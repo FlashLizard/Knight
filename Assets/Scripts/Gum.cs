@@ -6,8 +6,8 @@ public class Gum : EquipData
 {
     private BulletId _bulletId;
     private int _speed;
-    public Gum(EquipId id, string name, EquipQuality quality, int demage, float interval,BulletId bulletId,int speed) :
-        base(id,name, EquipType.Gum, quality, demage,interval)
+    public Gum(EquipId id, string name, EquipQuality quality, int demage, int depletion, float interval,BulletId bulletId,int speed) :
+        base(id,name, EquipType.Gum, quality, demage, depletion,interval)
     {
         this.BulletId = bulletId;
         this.Speed = speed;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Animal : MonoBehaviour
 {
-    int _health;
+    protected int _health;
     [SerializeField]
     float _speed;
     Rigidbody2D _rb;

@@ -41,8 +41,8 @@ public enum BulletId
 static class Data
 {
     public static EquipData[] equipments =
-        { new Gum(EquipId.OrignalPistol,"OrignalPistol",EquipQuality.White,1,0.5f,BulletId.Normal,20),
-    new Sword(EquipId.BigSword,"BigSword",EquipQuality.White,1,0.8f) };
+        { new Gum(EquipId.OrignalPistol,"OrignalPistol",EquipQuality.White,1,2,0.5f,BulletId.Normal,20),
+    new Sword(EquipId.BigSword,"BigSword",EquipQuality.White,1,0,0.8f) };
     public static BulletData[] bullets =
          { new BulletData("Normal",0.2f) };
     public static DestructionData[] destructions =
@@ -79,5 +79,22 @@ static class Data
     {
         SpriteRenderer spr = gameObject.GetComponent<SpriteRenderer>();
         spr.sprite = Resources.Load<Sprite>(image);
+    }
+    public static Vector2 ThreeToTwo(Vector3 orgin)
+    {
+        return new Vector2(orgin.x, orgin.y);
+    }
+    public static Vector2 Normalize(Vector2 orgin)
+    {
+        return Normalize(new Vector3(orgin.x,orgin.y,0));
+    }
+    public static Vector2 Normalize(Vector3 orgin)
+    {
+        orgin.z = 0;
+        return ThreeToTwo(Vector3.Normalize(orgin));
+    }
+    public static GameObject produce(string name,Vector2 position)
+    {
+        return Object.Instantiate(Resources.Load<GameObject>("Prefabs/"+name), position, new Quaternion(0, 0, 0, 1));
     }
 }

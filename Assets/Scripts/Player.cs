@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 //using UnityEngine.UIElements;
 
 public class Player : Animal,IGetHurtable,IPickable
@@ -12,11 +13,38 @@ public class Player : Animal,IGetHurtable,IPickable
     [SerializeField]
     Item _toItem;
     [SerializeField]
-    GameObject skill,mainHand,subHand;
+    GameObject skill, mainHand, subHand,skillHand;
+    [SerializeField]
+    Slider healthUI, magicUI, defenceUI;
 
-    public int Magic { get => _magic; set => _magic = value; }
+    public int Magic
+    { 
+        get => _magic;
+        set
+        {
+            _magic = value < 0 ? 0 : value;
+            magicUI.value = value;
+        }
+    }
+    public new int Health
+    {
+        get => _health;
+        set
+        {
+            _health = value < 0 ? 0 : value;
+            healthUI.value = value;
+        }
+    }
+    public int Defence
+    {
+        get => _defence;
+        set
+        {
+            _defence = value < 0 ? 0 : value;
+            defenceUI.value = value;
+        }
+    }
     public int Money { get => _money; set => _money = value; }
-    public int Defence { get => _defence; set => _defence = value; }
     public bool Skilling { get => _skilling; set => _skilling = value; }
     public bool Hurt { get => _hurt; set => _hurt = value; }
     public bool Exchange { get => _exchange; set => _exchange = value; }
@@ -35,6 +63,9 @@ public class Player : Animal,IGetHurtable,IPickable
         Init();
         Skilling = Hurt = false;
         this.Equipment = EquipId.OrignalPistol;
+        Magic = 180;
+        Health = 5;
+        Defence = 5;
         //this.SubEquipment = EquipId.BigSword;
     }
 
@@ -52,7 +83,7 @@ public class Player : Animal,IGetHurtable,IPickable
 
     void Skill()
     {
-        
+        if(skillHand==null) skillHand = Instantiate(mainHand);
     }
 
     void GetMoney()
@@ -129,8 +160,7 @@ public class Player : Animal,IGetHurtable,IPickable
         {
             //ToMouse = new Vector2(0.6f, 0.8f);
             Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 direction = Vector3.Normalize(new Vector3(position.x - transform.position.x, position.y - transform.position.y, 0));
-            ToMouse =new Vector2(direction.x,direction.y);
+            ToMouse =Data.Normalize(position-transform.position);
             Attack();
             Attacking = false;
         }
@@ -151,7 +181,9 @@ public class Player : Animal,IGetHurtable,IPickable
     }
     void Attack()
     {
-        if (Filling) return;
+        int depletion = Data.Get(Equipment).Depletion;
+        if (Filling||Magic<depletion) return;
+        Magic -= depletion;
         Filling = true;
         Data.Get(Equipment).Attack(gameObject);
         Invoke("FillFinish", Data.Get(Equipment).Interval);

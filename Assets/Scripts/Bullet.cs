@@ -22,10 +22,10 @@ public class Bullet:MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
-        if(collision.tag=="Destruction")
+        Debug.Log(collision.tag);
+        if (collision.tag=="Destruction")
         {
-            Debug.Log(collision.tag);
+            //Debug.Log(collision.tag);
             collision.GetComponent<IGetHurtable>().GetHurt(Demage);
             Destroy(gameObject);
         }

@@ -10,6 +10,10 @@ public class Box : Destruction
     }
     public override void Dead()
     {
+        if(Random.value>0.75)
+        {
+            Data.produce("MagicSample",gameObject.transform.position);
+        }
         Destroy(gameObject);
     }
     public static void Create(Vector2 position)
