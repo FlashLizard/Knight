@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Animal : MonoBehaviour,IGetHurtable
 {
+    private AnimalId _id;
     protected int _health;
     [SerializeField]
     float _speed;
@@ -13,6 +14,7 @@ public abstract class Animal : MonoBehaviour,IGetHurtable
     public float Speed { get => _speed; set => _speed = value; }
     public Rigidbody2D Rb { get => _rb; set => _rb = value; }
     public Animator Anim { get => _anim; set => _anim = value; }
+    public AnimalId Id { get => _id; set => _id = value; }
 
     protected void Init()
     {
@@ -21,15 +23,6 @@ public abstract class Animal : MonoBehaviour,IGetHurtable
     }
     public abstract void Dead();
     public abstract void GetHurt(int demage);
-    //public virtual void TurnFace()
-    //{
-
-    //}
-    public virtual void Move(float toX,float toY)
-    {
-        if (toX > 0) Rb.transform.localScale = new Vector3(1, 1, 1);
-        if (toX < 0) Rb.transform.localScale = new Vector3(-1, 1, 1);
-        Data.Move(Rb,toX*Speed,toY*Speed);
-    }
+    public abstract void Move(float toX, float toY);
 
 }

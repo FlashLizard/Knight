@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class Magic : Acquisition
 {
+    private void Start()
+    {
+        base.Init();
+        Id = AcquisitionId.Magic;
+    }
     public override void Dead()
     {
-        player.GetComponent<Player>().Magic++;
+        Data.GetPlayer().GetComponent<Player>().Magic+=5;
         Destroy(gameObject);
     }
 }

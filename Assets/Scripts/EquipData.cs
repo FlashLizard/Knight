@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class EquipData
 {
+    public Atk Attack;
     private string _name;
     private EquipType _type;
     private EquipQuality _quality;
@@ -19,7 +20,7 @@ public abstract class EquipData
     public int Demage { get => _demage; set => _demage = value; }
     public int Depletion { get => _depletion; set => _depletion = value; }
 
-    public EquipData(EquipId id,string name, EquipType type, EquipQuality quality, int demage,int depletion,float interval)
+    public EquipData(EquipId id,string name, EquipType type, EquipQuality quality, int demage,int depletion,float interval,Atk attack)
     {
         this.Id = id;
         this.Name = name;
@@ -28,6 +29,6 @@ public abstract class EquipData
         this.Interval = interval;
         this.Demage = demage;
         this.Depletion = depletion;
+        this.Attack = attack;
     }
-    public abstract void Attack(GameObject Hand, Vector2 derection);
 }

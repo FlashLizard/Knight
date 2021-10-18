@@ -5,9 +5,9 @@ using UnityEngine;
 public class Gum : EquipData
 {
     private BulletId _bulletId;
-    private int _speed;
-    public Gum(EquipId id, string name, EquipQuality quality, int demage, int depletion, float interval,BulletId bulletId,int speed) :
-        base(id,name, EquipType.Gum, quality, demage, depletion,interval)
+    private int _speed, _nums;
+    public Gum(EquipId id, string name, EquipQuality quality, int demage, int depletion, float interval,BulletId bulletId,int speed,Atk attack) :
+        base(id,name, EquipType.Gum, quality, demage, depletion,interval,attack)
     {
         this.BulletId = bulletId;
         this.Speed = speed;
@@ -15,9 +15,5 @@ public class Gum : EquipData
 
     public BulletId BulletId { get => _bulletId; set => _bulletId = value; }
     public int Speed { get => _speed; set => _speed = value; }
-
-    public override void Attack(GameObject Hand,Vector2 derection)
-    {
-        Bullet.Create(BulletId,this.Demage,this.Speed, derection, Hand.transform.position);
-    }
+    public int Nums { get => _nums; set => _nums = value; }
 }

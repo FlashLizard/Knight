@@ -4,27 +4,31 @@ using UnityEngine;
 using UnityEngine.UI;
 //using UnityEngine.UIElements;
 
-public class Player : Animal,IGetHurtable,IPickable
+public class Player : Animal, IGetHurtable, IPickable
 {
     #region Define
-    int _magic, _money, _defence;
+    private const int maxMagic=180, maxHealth=5, maxDefence=5;
+    int _magic, _money, _defence, _coins;
     EquipId _equipment, _subEquipment;
     bool _skilling, _hurt, _exchange, _attacking, _filling, _use, _test;
     Vector2 _toMouse;
     [SerializeField]
     Item _toItem;
     [SerializeField]
-    GameObject skill, mainHand, subHand,skillHand;
+    GameObject skill, mainHand, subHand, skillHand;
     [SerializeField]
     Slider healthUI, magicUI, defenceUI;
+    [SerializeField]
+    Text coinsUI;
 
-    
+
     public int Magic
-    { 
+    {
         get => _magic;
         set
         {
             _magic = value < 0 ? 0 : value;
+            _magic = value > maxMagic ? maxMagic : value;
             magicUI.value = value;
         }
     }
@@ -33,7 +37,8 @@ public class Player : Animal,IGetHurtable,IPickable
         get => _health;
         set
         {
-            _health = value < 0 ? 0 : value;
+            _health = value < 0 ? 0 : value; 
+            _health = value > maxHealth ? maxHealth : value;
             healthUI.value = value;
         }
     }
@@ -43,7 +48,17 @@ public class Player : Animal,IGetHurtable,IPickable
         set
         {
             _defence = value < 0 ? 0 : value;
+            _defence = value > maxDefence ? maxDefence : value;
             defenceUI.value = value;
+        }
+    }
+    public int Coins
+    { 
+        get => _coins;
+        set
+        {
+            _coins = value;
+            coinsUI.text = value.ToString();
         }
     }
     public int Money { get => _money; set => _money = value; }
@@ -62,12 +77,15 @@ public class Player : Animal,IGetHurtable,IPickable
     void Start()
     {
         Init();
+        Id = AnimalId.Player;
         Skilling = Hurt = false;
         this.Equipment = EquipId.OrignalPistol;
         Speed = 500;
         Magic = 180;
         Health = 5;
         Defence = 5;
+        Coins = 0;
+        AddDefence();
         //this.SubEquipment = EquipId.BigSword;
     }
     void Update()
@@ -76,7 +94,7 @@ public class Player : Animal,IGetHurtable,IPickable
     }
     private void FixedUpdate()
     {
-        Movement();
+        Move(Speed * Input.GetAxis("Horizontal"), Speed * Input.GetAxis("Vertical"));
         ToAnimator();
     }
     void Skill()
@@ -87,7 +105,7 @@ public class Player : Animal,IGetHurtable,IPickable
     }
     public override void Dead()
     {
-        
+
     }
     public void Pick(EquipId id)
     {
@@ -105,7 +123,7 @@ public class Player : Animal,IGetHurtable,IPickable
     }
     void ChangeEquipment()
     {
-        if(SubEquipment!=EquipId.Null)
+        if (SubEquipment != EquipId.Null)
         {
             EquipId temp = this.SubEquipment;
             this.SubEquipment = this.Equipment;
@@ -116,11 +134,11 @@ public class Player : Animal,IGetHurtable,IPickable
         Exchange = false;
         FillFinish();
     }
-    void Movement()
+    public override void Move(float toX, float toY)
     {
-        float horizontalMove = Input.GetAxis("Horizontal");
-        float verticalMove = Input.GetAxis("Vertical");
-        Move(horizontalMove, verticalMove);
+        if (toX > 0) Rb.transform.localScale = new Vector3(1, 1, 1);
+        if (toX < 0) Rb.transform.localScale = new Vector3(-1, 1, 1);
+        Data.Move(Rb, toX, toY);
     }
     public void SkillFinish()
     {
@@ -138,47 +156,63 @@ public class Player : Animal,IGetHurtable,IPickable
     }
     public override void GetHurt(int demage)
     {
-        
+        if (demage > Defence)
+        {
+            demage -= Defence;
+            Health -= demage;
+            Defence = 0;
+        }
+        else Defence -= demage;
+        if (Health <= 0) Dead();
     }
     void ToAnimator()
     {
         float x = Rb.velocity.x, y = Rb.velocity.y;
         Anim.SetFloat("Moving", Mathf.Sqrt(x * x + y * y));
-        if (Skilling&&!skill.activeSelf)
+        if (Skilling && !skill.activeSelf)
         {
             Skill();
         }
         if (Exchange) ChangeEquipment();
-        if(Attacking)
+        if (Attacking)
         {
             Attack();
         }
-        if(Use)
+        if (Use)
         {
             if (ToItem != null) ToItem.Interactive(gameObject);
             Use = false;
         }
-        if(Test)
+        if (Test)
         {
-            Box.Create(transform.position);
+            Data.Produce("Goblin1Sample",transform.position);
             Test = false;
         }
     }
     void FillFinish()
     {
-        Filling=false;
+        Filling = false;
+    }
+    void AddDefence()
+    {
+        Defence++;
+        Invoke("AddDefence",5f);
     }
     void Attack()
     {
         int depletion = Data.Get(Equipment).Depletion;
         Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         ToMouse = Data.Normalize(position - transform.position);
-        if (Filling||Magic<depletion) return;
+        if (Filling || Magic < depletion) return;
         Magic -= depletion;
         Filling = true;
-        Data.Get(Equipment).Attack(mainHand,ToMouse);
-        if(Skilling) Data.Get(Equipment).Attack(skillHand,ToMouse);
+        Data.Get(Equipment).Attack(Equipment,tag,mainHand, ToMouse);
+        if (Skilling) Data.Get(Equipment).Attack(Equipment,tag, skillHand, ToMouse);
         Invoke("FillFinish", Data.Get(Equipment).Interval);
         Attacking = false;
+    }
+    public bool IsMagicFull()
+    {
+        return Magic == maxMagic;
     }
 }

@@ -10,9 +10,13 @@ public class Box : Destruction
     }
     public override void Dead()
     {
-        if(Random.value>0.75)
+        if(Random.value>0.15)
         {
-            Data.produce("MagicSample",gameObject.transform.position);
+            Data.Reward(transform.position,2,0);
+        }
+        else if(Random.value>0.15)
+        {
+            Data.Reward(transform.position, 0, 2);
         }
         Destroy(gameObject);
     }

@@ -4,8 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Destrucion
   - Destruction
+  - Enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX

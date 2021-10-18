@@ -4,18 +4,24 @@ using UnityEngine;
 
 public abstract class Acquisition : MonoBehaviour
 {
+    AcquisitionId _id;
     [SerializeField]
     Rigidbody2D rb;
     [SerializeField]
     LayerMask playerLayer;
-    [SerializeField]
-    protected GameObject player;
+
+    public AcquisitionId Id { get => _id; set => _id = value; }
+
+    protected void Init()
+    {
+        rb = gameObject.GetComponent<Rigidbody2D>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag=="Player")
         {
-            if (player == null) player = collision.gameObject;
+            if (Id == AcquisitionId.Magic && Data.GetPlayer().GetComponent<Player>().IsMagicFull()) return;
             rb.velocity = 4*Data.Normalize(collision.transform.position-gameObject.transform.position);
         }
     }
