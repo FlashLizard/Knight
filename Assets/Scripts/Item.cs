@@ -18,7 +18,7 @@ public abstract class Item : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "Player")
+        if (collision.tag == "Player"&& collision.GetComponent<Player>().ToItem==this)
         {
             collision.GetComponent<Player>().ToItem = null;
         }

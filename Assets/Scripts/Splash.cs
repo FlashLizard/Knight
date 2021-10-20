@@ -33,17 +33,15 @@ public class Splash : MonoBehaviour
     {
         Destroy(gameObject);
     }
-    public static void Create(int demage, float radius, Vector2 direction, Vector2 position, string from)
+    public static void Create(int demage, float radius, Vector3 direction, Vector3 position, string from)
     {
-        GameObject newSplash = Object.Instantiate(Resources.Load<GameObject>("Prefabs/SplashSample"), 
-            position+direction, new Quaternion(0, 0, 0, 1));
+        GameObject newSplash = Data.Produce("Splash",position+radius*direction,Data.Player);
         Splash splash = newSplash.GetComponent<Splash>();
         splash.Demage = demage;
-        CircleCollider2D coll = newSplash.AddComponent<CircleCollider2D>() as CircleCollider2D;
-        coll.radius = radius;
-        coll.isTrigger = true;
         //position -= 0.2f*direction;
         //coll.transform.position = Data.TwoToThree(position);
         splash.From = from;
+        newSplash.transform.right = direction;
+        newSplash.transform.localScale = new Vector3(radius, radius, 0);
     }
 }

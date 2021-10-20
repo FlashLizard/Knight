@@ -6,7 +6,7 @@ public class Gum : EquipData
 {
     private BulletId _bulletId;
     private int _speed, _nums;
-    public Gum(EquipId id, string name, EquipQuality quality, int demage, int depletion, float interval,BulletId bulletId,int speed,Atk attack) :
+    public Gum(EquipId id, string name, Color quality, int demage, int depletion, float interval,BulletId bulletId,int speed,Atk attack) :
         base(id,name, EquipType.Gum, quality, demage, depletion,interval,attack)
     {
         this.BulletId = bulletId;

@@ -4,9 +4,19 @@ using UnityEngine;
 
 public class Corpse :MonoBehaviour
 {
-    public static void Create(AnimalId id, Vector2 poistion)
+    private void Start()
     {
-        GameObject newCorpe = Data.Produce("CorpseSample", poistion);
+        
+    }
+    public static void Create(AnimalId id, Vector3 poistion)
+    {
+        GameObject newCorpe = Data.Produce("Corpse", poistion);
         Data.FreshImage(newCorpe,"Corpses/"+id.ToString()+"Death");
+        Debug.Log("Corpses/" + id.ToString() + "Death");
+    }
+    public static void Create(string name, Vector3 poistion)
+    {
+        GameObject newCorpe = Data.Produce("Corpse", poistion);
+        Data.FreshImage(newCorpe, "Corpses/" + name + "Death");
     }
 }

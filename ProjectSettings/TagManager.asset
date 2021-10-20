@@ -7,16 +7,17 @@ TagManager:
   - Destruction
   - Enemy
   - Bullet
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wall
   - Water
   - UI
   - Player
-  - 
-  - 
+  - Enemy
+  - Maze
   - 
   - 
   - 

@@ -21,15 +21,15 @@ public abstract class Acquisition : MonoBehaviour
     {
         if(collision.tag=="Player")
         {
-            if (Id == AcquisitionId.Magic && Data.GetPlayer().GetComponent<Player>().IsMagicFull()) return;
-            rb.velocity = 4*Data.Normalize(collision.transform.position-gameObject.transform.position);
+            if (Id == AcquisitionId.Magic && Data.Player.GetComponent<Player>().IsMagicFull()) return;
+            rb.velocity = 4*(collision.transform.position-gameObject.transform.position).normalized;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.tag == "Player")
         {
-            rb.velocity = new Vector2(0,0);
+            rb.velocity = new Vector3(0,0);
         }
     }
     private void FixedUpdate()

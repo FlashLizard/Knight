@@ -11,7 +11,11 @@ public class Magic : Acquisition
     }
     public override void Dead()
     {
-        Data.GetPlayer().GetComponent<Player>().Magic+=5;
-        Destroy(gameObject);
+        Player player = Data.Player.GetComponent<Player>();
+        if (!player.IsMagicFull())
+        {
+            player.Magic += 5;
+            Destroy(gameObject);
+        }
     }
 }

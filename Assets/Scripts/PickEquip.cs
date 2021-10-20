@@ -11,16 +11,16 @@ public class PickEquip : Item
     {
         this.Id = ItemId.Equipment;
         if(this.NowId==EquipId.Null) this.NowId = EquipId.BigSword;
+        Data.FreshImage(gameObject, Data.GetImage(NowId));
     }
     public override void Interactive(GameObject user)
     {
         user.GetComponent<IPickable>().Pick(NowId);
         Destroy(gameObject);
     }
-    public static void Create(EquipId newId, Vector2 position)
+    public static void Create(EquipId newId, Vector3 position)
     {
-        GameObject newEquip = Object.Instantiate(Resources.Load<GameObject>("Prefabs/PickEquipSample"), position,new Quaternion(0,0,0,1));
+        GameObject newEquip = Data.Produce("PickEquip", position);
         newEquip.GetComponent<PickEquip>().NowId = newId;
-        Data.FreshImage(newEquip, Data.GetImage(newId));
     }
 }

@@ -21,8 +21,27 @@ public abstract class Animal : MonoBehaviour,IGetHurtable
         Anim = GetComponent<Animator>();
         Rb = GetComponent<Rigidbody2D>();
     }
+    protected virtual void BeforeDead()
+    {
+        gameObject.transform.parent.GetComponent<EnemyRoom>().EnemyNum--;
+    }
+    protected void HurtAnimation()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        Invoke("NoHurtAnimation",0.1f);
+    }
+    protected void NoHurtAnimation()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+
+    }
     public abstract void Dead();
-    public abstract void GetHurt(int demage);
+    public virtual void GetHurt(int demage)
+    {
+        HurtAnimation();
+        this.Health -= demage;
+        if (this.Health <= 0) Dead();
+    }
     public abstract void Move(float toX, float toY);
 
 }

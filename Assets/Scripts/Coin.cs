@@ -11,7 +11,7 @@ public class Coin : Acquisition
     }
     public override void Dead()
     {
-        Data.GetPlayer().GetComponent<Player>().Coins ++;
+        Data.Player.GetComponent<Player>().Coins ++;
         Destroy(gameObject);
     }
 }

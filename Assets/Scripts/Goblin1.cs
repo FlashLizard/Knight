@@ -15,34 +15,32 @@ public class Goblin1 : Animal
         float x = Rb.velocity.x, y = Rb.velocity.y;
         Anim.SetFloat("running", Mathf.Sqrt(x * x + y * y));
     }
-
-    private void Start()
+    private void Awake()
     {
         base.Init();
         Id = AnimalId.Goblin1;
         Equipment = EquipId.GoblinGum;
         Speed = 250;
-        Health = 9;
+        Health = 5;
+    }
+    private void Start()
+    {
         Hung();
     }
     public override void Dead()
     {
+        BeforeDead();
         Corpse.Create(this.Id, gameObject.transform.position);
-        Data.Reward(transform.position, 2, 5);
+        Data.Reward(transform.position, Data.RanInt(2), Data.RanInt(3),1);
         Destroy(gameObject);
-    }
-    public override void GetHurt(int demage)
-    {
-        this.Health -= demage;
-        if (this.Health < 0) Dead();
     }
     public override void Move(float toX, float toY)
     {
-        int direction = transform.position.x < Data.GetPlayer().transform.position.x ? 1 : -1;
+        int direction = transform.position.x < Data.Player.transform.position.x ? 1 : -1;
         Rb.transform.localScale = new Vector3(direction, 1, 1);
         Data.Move(Rb, toX, toY);
     }
-    public void Move(Vector2 velocity)
+    public void Move(Vector3 velocity)
     {
         Move(velocity.x, velocity.y);
     }
@@ -56,21 +54,21 @@ public class Goblin1 : Animal
     private void Hung()
     {
         float interval = Random.Range(0.3f, 0.8f),distance = Data.DisToPlayer(gameObject.transform.position);
-        Vector2 velocity;
+        Vector3 velocity;
         if (distance<2f)
         {
-            velocity = Data.Normalize(new Vector2(Random.value - 0.5f, Random.value - 0.5f));
+            velocity = new Vector3(Random.value - 0.5f, Random.value - 0.5f).normalized;
         }
         else if(distance>3f)
         {
-            velocity = -Data.Normalize(new Vector2(Random.value - 0.5f, Random.value - 0.5f));
+            velocity = -new Vector3(Random.value - 0.5f, Random.value - 0.5f).normalized;
         }
         else
         {
             velocity = Data.ToPlayer(transform.position);
         }
         Move(Speed * velocity);
-        if (Random.value > 0.5) Invoke("Hung", interval);
+        if (Random.value > 0.25) Invoke("Hung", interval);
         else Invoke("Attack", interval);
     }
 }

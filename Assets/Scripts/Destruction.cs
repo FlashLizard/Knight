@@ -12,18 +12,27 @@ public abstract class Destruction : MonoBehaviour, IGetHurtable
     public int Health { get => _health; set => _health = value; }
     public DestructionId Id { get => _id; set => _id = value; }
 
-    public void Init(DestructionId id, string image)
+    public void Init(DestructionId id,int health)
     {
-        DestructionData data = Data.Get(id);
-        this.Health = data.Health;
+        this.Health = health;
         this.Id = id;
-        Data.FreshImage(gameObject, image);
         //coll = GetComponent<Collider2D>();
     }
-    public void GetHurt(int demage)
+    public virtual void GetHurt(int demage)
     {
-        Health -= demage;
-        if (Health <= 0) Dead();
+        HurtAnimation();
+        this.Health -= demage;
+        if (this.Health < 0) Dead();
+    }
+    protected void HurtAnimation()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.grey;
+        Invoke("NoHurtAnimation", 0.1f);
+    }
+    protected void NoHurtAnimation()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+
     }
     public abstract void Dead();
 }

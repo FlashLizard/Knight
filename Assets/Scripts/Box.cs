@@ -6,22 +6,27 @@ public class Box : Destruction
 {
     void Start()
     {
-        Init(DestructionId.Box,Data.GetImage(DestructionId.Box));
+        Init(DestructionId.Box,5);
     }
     public override void Dead()
     {
-        if(Random.value>0.15)
+        float ran = Random.value;
+        if(0.7<ran&&ran<0.83)
         {
-            Data.Reward(transform.position,2,0);
+            Data.Reward(transform.position,2,0,1);
         }
-        else if(Random.value>0.15)
+        else if(0.83<ran&&ran<0.96)
         {
-            Data.Reward(transform.position, 0, 2);
+            Data.Reward(transform.position, 0, 2,1);
+        }
+        else if(ran>0.96)
+        {
+            BloodBottle.Create(transform.position);
         }
         Destroy(gameObject);
     }
-    public static void Create(Vector2 position)
+    public static void Create(Vector3 position)
     {
-        GameObject newBox = Object.Instantiate(Resources.Load<GameObject>("Prefabs/BoxSample"), position, new Quaternion(0, 0, 0, 1));
+        Data.Produce("Box",position);
     }
 }

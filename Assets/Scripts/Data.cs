@@ -18,13 +18,18 @@ public enum AcquisitionId
 public enum DestructionId
 {
     Box,
-
+    MagicMine,
+    CoinMine
 }
 public enum ItemId
 {
     Equipment,
-    Blood,
-    Magic
+    BloodBottle,
+    MagicBottle,
+    Chest,
+    NormalChest,
+    Goods,
+    Portal
 
 }
 public enum EquipId
@@ -33,7 +38,10 @@ public enum EquipId
     OrignalPistol,
     BigSword,
     GoblinGum,
-    GoblinStaff
+    GoblinStaff,
+    HandSword,
+    ShotGum, 
+    Meat
 
 }
 public enum EquipType
@@ -41,31 +49,72 @@ public enum EquipType
     Gum,
     Sword
 }
-public enum EquipQuality
-{
-    White,
-    Green,
-    Blue
-
-}
 public enum BulletId
 {
     Normal,
     Red
 }
-static class Data
+public static class Data
 {
-    public static GameObject player;
+
+    public static float[] dx = { 0, 0, -34, 34 }, dy = { 22, -22, 0, 0 };
+    private static GameObject _player,_statusUI,_settingsUI;
+    public static GameObject SettingUI
+    {
+        get
+        {
+            if (_settingsUI == null)
+            {
+                return _settingsUI = Data.Produce("Settings", new Vector3(0, 0));
+            }
+            return _settingsUI;
+        }
+    }
+    public static GameObject Player
+    {
+        get
+        {
+            if (_player == null)
+            {
+                return _player = Data.Produce("Player", new Vector3(0, 0));
+            }
+            return _player;
+        }
+    }
+    public static GameObject StatusUI
+    {
+        get
+        {
+            if (_statusUI == null)
+            {
+                return _statusUI = Data.Produce("StatusUI", new Vector3(0, 0));
+            }
+            return _statusUI;
+        }
+    }
     public static EquipData[] equipments =
-        { new Gum(EquipId.OrignalPistol,"OrignalPistol",EquipQuality.White,1,2,0.5f,BulletId.Normal,20,AttackFun.Pistol),
-    new Sword(EquipId.BigSword,"BigSword",EquipQuality.White,1,0,0.8f,AttackFun.Sword),
-    new Gum(EquipId.GoblinGum,"GoblinGum",EquipQuality.White,3,1,0.5f,BulletId.Red,15,AttackFun.TwoPistol),
-    new Gum(EquipId.GoblinStaff,"GoblinStaff",EquipQuality.White,3,2,0.7f,BulletId.Red,10,AttackFun.GoblinStaff)};
+        { new Gum(EquipId.OrignalPistol,"OrignalPistol",Color.white,2,0,0.5f,BulletId.Normal,20,AttackFun.Pistol),
+    new Sword(EquipId.BigSword,"BigSword",Color.white,3,0,0.8f,AttackFun.Sword,1),
+    new Gum(EquipId.GoblinGum,"GoblinGum",Color.green,3,1,0.5f,BulletId.Red,8,AttackFun.TwoPistol),
+    new Gum(EquipId.GoblinStaff,"GoblinStaff",Color.green,3,2,0.7f,BulletId.Red,8,AttackFun.GoblinStaff),
+    new Sword(EquipId.HandSword,"HandSword",Color.white,1,0,0.3f,AttackFun.Sword,0.5f),
+    new Gum(EquipId.ShotGum,"ShotGum",Color.blue,3,2,0.5f,BulletId.Normal,15,AttackFun.ShotGum),
+    new Sword(EquipId.Meat,"Meat",Color.blue,2,0,0.4f,AttackFun.Sword,0.3f)};
     public static BulletData[] bullets =
          { new BulletData("Normal",0.2f),
            new BulletData("Red",0.2f)};
-    public static DestructionData[] destructions =
-          { new DestructionData("Box",2) };
+    //public static DestructionData[] destructions =
+    //      { new DestructionData("Box",2),
+    //new DestructionData("Box",2),
+    //    new DestructionData("Box",2)};
+    public static LayerMask Maze
+    {
+        get => LayerMask.NameToLayer("Maze");
+    }
+    public static LayerMask EnemyLayer
+    {
+        get => LayerMask.NameToLayer("Enemy");
+    }
     public static string GetImage(EquipId id)
     {
         return @"Equipments/" + Get(id).Name;
@@ -78,10 +127,10 @@ static class Data
     {
         return @"Bullets/" + Get(id).Name;
     }
-    public static string GetImage(DestructionId id)
-    {
-        return @"Destructions/" + Get(id).Name;
-    }
+    //public static string GetImage(DestructionId id)
+    //{
+    //    return @"Destructions/" + id.ToString();
+    //}
     public static EquipData Get(EquipId id)
     {
         return equipments[(int)id - 1];
@@ -90,87 +139,88 @@ static class Data
     {
         return bullets[(int)id];
     }
-    public static DestructionData Get(DestructionId id)
-    {
-        return destructions[(int)id];
-    }
+    //public static DestructionData Get(DestructionId id)
+    //{
+    //    return destructions[(int)id];
+    //}
     public static void FreshImage(GameObject gameObject, string image)
     {
         SpriteRenderer spr = gameObject.GetComponent<SpriteRenderer>();
         spr.sprite = Resources.Load<Sprite>(image);
     }
-    public static Vector2 ThreeToTwo(Vector3 orgin)
+    public static GameObject Produce(string name, Vector3 position)
     {
-        return new Vector2(orgin.x, orgin.y);
+        return Object.Instantiate(Resources.Load<GameObject>("Prefabs/" + name), position, new Quaternion(0, 0, 0, 1));
     }
-    public static Vector3 TwoToThree(Vector2 orgin)
+    public static GameObject Produce(string name, Vector3 position,GameObject parent)
     {
-        return new Vector3(orgin.x, orgin.y);
+        GameObject child = Produce(name, position);
+        child.transform.parent = parent.transform;
+        return child;
     }
-    public static Vector2 Normalize(Vector2 orgin)
+    public static Vector3 RandomPos(Vector3 position, float delta)
     {
-        return Normalize(new Vector3(orgin.x,orgin.y,0));
+        return new Vector3(position.x + (0.5f - Random.value) * delta, position.y + (0.5f - Random.value) * delta);
     }
-    public static Vector2 Normalize(Vector3 orgin)
+    public static void Move(Rigidbody2D rb, float toX, float toY)
     {
-        orgin.z = 0;
-        return ThreeToTwo(Vector3.Normalize(orgin));
+        rb.velocity = new Vector3(toX * Time.fixedDeltaTime, toY * Time.fixedDeltaTime);
     }
-    public static GameObject Produce(string name,Vector2 position)
+    public static void FreshPlayer()
     {
-        return Object.Instantiate(Resources.Load<GameObject>("Prefabs/"+name), position, new Quaternion(0, 0, 0, 1));
+        GameObject.Destroy(Player);
     }
-    public static Vector2 RandomPos(Vector2 position,float delta)
+    public static Vector3 ToPlayer(Vector3 position)
     {
-        return new Vector2(position.x + (0.5f - Random.value) * delta, position.y + (0.5f - Random.value)*delta);
+        return (Player.transform.position - position).normalized;
     }
-    public static void Move(Rigidbody2D rb,float toX,float toY)
+    public static void Reward(Vector3 position, int magicNum, int coinNum, float range)
     {
-        rb.velocity = new Vector2(toX * Time.fixedDeltaTime, toY * Time.fixedDeltaTime);
-    }
-    public static GameObject FreshPlayer()
-    {
-        return player = GameObject.Find("Player");
-    }
-    public static GameObject GetPlayer()
-    {
-        if (player == null) return FreshPlayer();
-        return player;
-    }
-    public static Vector2 ToPlayer(Vector2 position)
-    {
-        return Normalize(ThreeToTwo(GetPlayer().transform.position)-position);
-    }
-    public static void Reward(Vector2 position,int magicNum,int coinNum)
-    {
-        for(int i=0;i<magicNum;i++)
+        for (int i = 0; i < magicNum; i++)
         {
-            Produce("MagicSample",RandomPos(position,1));
+            Produce("Magic", RandomPos(position, range));
         }
         for (int i = 0; i < coinNum; i++)
         {
-            Produce("CoinSample", RandomPos(position, 1));
+            Produce("Coin", RandomPos(position, range));
         }
     }
-    public static float Distence(Vector2 position1,Vector2 position2)
+    public static float DisToPlayer(Vector3 position)
     {
-        position1 -= position2;
-        return Mathf.Sqrt(position1.x * position1.x + position1.y * position1.y);
+        return (position - Player.GetComponent<Transform>().position).magnitude;
     }
-    public static float DisToPlayer(Vector2 position)
-    {
-        return Distence(position,GetPlayer().GetComponent<Transform>().position);
-    }
-    public static bool CanAttack(string from,string to)
+    public static bool CanAttack(string from, string to)
     {
         if (from == "Player" && (to == "Destruction" || to == "Enemy")) return true;
-        if (from == "Enemy" && to == "Player") return true;
+        if (from == "Enemy" && (to == "Destruction" || to == "Player")) return true;
         return false;
     }
-    public static Vector2 Ratote(Vector2 v,float angle)
+    public static Vector3 Ratote(Vector3 v, float angle)
     {
-        angle = angle * Mathf.PI/180;
+        angle = angle * Mathf.PI / 180;
         float s = Mathf.Sin(angle), c = Mathf.Cos(angle);
-        return new Vector2(v.x * c - v.y * s, v.x * s + v.y * c);
+        return new Vector3(v.x * c - v.y * s, v.x * s + v.y * c);
+    }
+    public static int RanInt(int a)
+    {
+        return (int)Random.Range(0, a + 0.99f);
+    }
+    public static int RanInt(int a, int b)
+    {
+        return a + RanInt(b - a);
+    }
+    public static bool HaveRoom(int direction,Room room)
+    {
+        return Physics2D.OverlapCircle(new Vector3(room.X+dx[direction], room.Y+dy[direction]),2f);
+    }
+    public static EquipId RanEquip()
+    {
+        EquipId equip;
+        do
+        {
+            equip = (EquipId)RanInt(1, sizeof(EquipId) - 1);
+        }
+        while (equip == EquipId.HandSword);
+        return equip;
     }
 }

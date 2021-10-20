@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet:MonoBehaviour
+public class Bullet:MonoBehaviour,IGetHurtable
 {
     //float _speed;
     string _from;
@@ -27,18 +27,22 @@ public class Bullet:MonoBehaviour
     {
         if(Data.CanAttack(From,collision.gameObject.tag))
         { 
-            //Debug.Log(collision.tag);
             collision.GetComponent<IGetHurtable>().GetHurt(Demage);
             Destroy(gameObject);
         }
+        if (collision.tag == "Wall") Dead();
     }
-    void Dead()
+    public void GetHurt(int demage)
+    {
+        Dead();
+    }
+    public void Dead()
     {
         Destroy(gameObject);
     }
-    public static void Create(BulletId id,int demage,float speed,Vector2 direction,Vector2 position,string from)
+    public static void Create(BulletId id,int demage,float speed,Vector3 direction,Vector3 position,string from)
     {
-        GameObject newBullet = Object.Instantiate(Resources.Load<GameObject>("Prefabs/BulletSample"),position,new Quaternion(0,0,0,1));
+        GameObject newBullet = Object.Instantiate(Resources.Load<GameObject>("Prefabs/Bullet"),position,new Quaternion(0,0,0,1));
         Bullet bullet = newBullet.GetComponent<Bullet>();
         bullet.Demage = demage;
         newBullet.GetComponent<Rigidbody2D>().velocity = speed*direction;
@@ -47,5 +51,6 @@ public class Bullet:MonoBehaviour
         coll.radius = Data.Get(id).Radius;
         coll.isTrigger = true;
         bullet.From = from;
+        newBullet.transform.right = direction;
     }
 }
