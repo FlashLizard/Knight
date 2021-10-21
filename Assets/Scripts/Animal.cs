@@ -38,6 +38,7 @@ public abstract class Animal : MonoBehaviour,IGetHurtable
     public abstract void Dead();
     public virtual void GetHurt(int demage)
     {
+        if (this.Health <= 0) return;
         HurtAnimation();
         this.Health -= demage;
         if (this.Health <= 0) Dead();

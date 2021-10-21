@@ -29,9 +29,9 @@ public class Goblin1 : Animal
     }
     public override void Dead()
     {
-        BeforeDead();
         Corpse.Create(this.Id, gameObject.transform.position);
         Data.Reward(transform.position, Data.RanInt(2), Data.RanInt(3),1);
+        BeforeDead();
         Destroy(gameObject);
     }
     public override void Move(float toX, float toY)

@@ -18,16 +18,32 @@ public static class AttackFun
             Bullet.Create(gum.BulletId, gum.Demage, gum.Speed,Data.RandomPos(direction,0.5f), Hand.transform.position, from);
         }
     }
+    public static void Snake(EquipId equip, string from, GameObject Hand, Vector3 direction)
+    {
+        Gum gum = (Gum)Data.Get(equip);
+        int n = Data.RanInt(4, 6);
+        for (int i = 0; i < n; i++)
+        {
+            Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, Data.RandomPos(direction, 0.8f), Hand.transform.position, from);
+        }
+    }
     public static void TwoPistol(EquipId equip, string from, GameObject Hand, Vector3 direction)
     {
         Gum gum = (Gum)Data.Get(equip);
         Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, direction, Hand.transform.position-0.5f*direction, from);
         Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, direction, Hand.transform.position+0.5f * direction, from);
     }
+    public static void Submachine(EquipId equip, string from, GameObject Hand, Vector3 direction)
+    {
+        Gum gum = (Gum)Data.Get(equip);
+        Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, direction, Hand.transform.position - 2*direction, from);
+        Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, direction, Hand.transform.position, from);
+        Bullet.Create(gum.BulletId, gum.Demage, gum.Speed, direction, Hand.transform.position + 2*direction, from);
+    }
     public static void Sword(EquipId equip, string from, GameObject Hand, Vector3 direction)
     {
         Sword sword = (Sword)Data.Get(equip);
-        Splash.Create(sword.Demage, sword.Radius, direction, Hand.transform.position, from);
+        Splash.Create(sword.Demage, sword.Radius, direction, Hand, from);
     }
     public static void GoblinStaff(EquipId equip, string from, GameObject Hand, Vector3 direction)
     {

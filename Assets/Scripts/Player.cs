@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 //using UnityEngine.UIElements;
 
@@ -12,7 +13,7 @@ public class Player : Animal, IGetHurtable, IPickable
     public static int maxMagic = 180, maxHealth = 5, maxDefence = 5;
     int _magic, _defence, _coins;
     EquipId _equipment, _subEquipment, _extraEquipment;
-    bool _skilling, _hurt, _exchange, _attacking, _filling, _use, _test;
+    bool _skilling, _hurt, _exchange, _attacking, _filling, _use, _test,_canHurt=true;
     [SerializeField]
     Item _toItem;
     [SerializeField]
@@ -118,6 +119,8 @@ public class Player : Animal, IGetHurtable, IPickable
             SkillUI.value = value;
         }
     }
+
+    public bool CanHurt { get => _canHurt; set => _canHurt = value; }
     #endregion
     void Start()
     {
@@ -171,11 +174,11 @@ public class Player : Animal, IGetHurtable, IPickable
     }
     public override void Dead()
     {
-        Data.SettingUI.GetComponent<UIControl>().NewGameClick();
+        Data.Clear();
+        SceneManager.LoadScene("Dead");
     }
     public void Pick(EquipId id)
     {
-        if (skill.activeSelf) return;
         if (SubEquipment == EquipId.Null)
         {
             SubEquipment = id;
@@ -219,7 +222,7 @@ public class Player : Animal, IGetHurtable, IPickable
     }
     void GetInput()
     {
-        if (Input.GetButtonDown("Skill") && (!Skilling)) Skilling = true;
+        if (Input.GetButtonDown("Skill") && (!skill.activeSelf)&&SkillTime==skillCD) Skilling = true;
         if (Input.GetButtonDown("Exchange")) Exchange = true;
         if (Input.GetButtonDown("Use")) Use = true;
         if (Input.GetButtonDown("Test")) Test = true;
@@ -239,6 +242,9 @@ public class Player : Animal, IGetHurtable, IPickable
     }
     public override void GetHurt(int demage)
     {
+        if (!CanHurt) return;
+        CanHurt = false;
+        Invoke("HurtFinish", 0.2f);
         HurtAnimation();
         if (demage > Defence)
         {
@@ -284,6 +290,7 @@ public class Player : Animal, IGetHurtable, IPickable
     }
     void Attack()
     {
+        Attacking = false;//状态一定会改变时放最前面
         int depletion = Data.Get(Equipment).Depletion;
         if (Filling || Magic < depletion) return;
         Magic -= depletion;
@@ -296,7 +303,6 @@ public class Player : Animal, IGetHurtable, IPickable
             Data.Get(Equipment).Attack(Equipment, tag, skillHand, ToMouse);
         }
         Invoke("FillFinish", Data.Get(Equipment).Interval);
-        Attacking = false;
     }
     public bool IsMagicFull()
     {
@@ -320,6 +326,10 @@ public class Player : Animal, IGetHurtable, IPickable
         if (Data.Get(Equipment).Type == EquipType.Gum) anim.runtimeAnimatorController = fire;
         else anim.runtimeAnimatorController = brandish;
         anim.PlayInFixedTime(0);
+    }
+    void HurtFinish()
+    {
+        CanHurt = true;
     }
     ////void ToHandSword()
     ////{

@@ -11,9 +11,8 @@ public class Portal : Item
     }
     public override void Interactive(GameObject user)
     {
-        DontDestroyOnLoad(Data.Player);
-        DontDestroyOnLoad(Data.StatusUI);
-        DontDestroyOnLoad(Data.SettingUI);
+        Data.Remain();
+        Data.Level++;
         SceneManager.LoadScene("Level01");
     }
     public static void Create(Vector3 position)

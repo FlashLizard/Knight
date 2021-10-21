@@ -17,7 +17,7 @@ public class Goods : Item
     {
         this.Id = ItemId.Goods;
         if (this.NowId == EquipId.Null) this.NowId = Data.RanEquip();
-        Price = Data.RanInt(20,50);
+        Price = Data.RanInt(10+Data.DeltaPrice(NowId), 15+ Data.DeltaPrice(NowId));
         tname.text = NowId.ToString();
         tname.color = Data.Get(NowId).Quality;
         tprice.text = Price.ToString();

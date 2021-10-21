@@ -7,7 +7,8 @@ public enum AnimalId
     Player,
     Pig,
     Goblin1,
-    GoblinWitch
+    GoblinWitch,
+    End
 }
 public enum AcquisitionId
 {
@@ -41,7 +42,11 @@ public enum EquipId
     GoblinStaff,
     HandSword,
     ShotGum, 
-    Meat
+    Meat,
+    MidSword,
+    Snake,
+    Submachine,
+    End
 
 }
 public enum EquipType
@@ -52,11 +57,22 @@ public enum EquipType
 public enum BulletId
 {
     Normal,
-    Red
+    Red,
+    Blue,
+    Snake
 }
 public static class Data
 {
+    private static int _level;
+    public static Dictionary<Color, float> equipRare = new Dictionary<Color, float>
+    {
+        [Color.white] = 0,
+        [Color.green] = 0.1f,
+        [Color.blue]=0.2f,
+        [Color.yellow] = 0.3f,
+        [Color.red] = 0.6f,
 
+    };
     public static float[] dx = { 0, 0, -34, 34 }, dy = { 22, -22, 0, 0 };
     private static GameObject _player,_statusUI,_settingsUI;
     public static GameObject SettingUI
@@ -93,16 +109,25 @@ public static class Data
         }
     }
     public static EquipData[] equipments =
-        { new Gum(EquipId.OrignalPistol,"OrignalPistol",Color.white,2,0,0.5f,BulletId.Normal,20,AttackFun.Pistol),
-    new Sword(EquipId.BigSword,"BigSword",Color.white,3,0,0.8f,AttackFun.Sword,1),
-    new Gum(EquipId.GoblinGum,"GoblinGum",Color.green,3,1,0.5f,BulletId.Red,8,AttackFun.TwoPistol),
-    new Gum(EquipId.GoblinStaff,"GoblinStaff",Color.green,3,2,0.7f,BulletId.Red,8,AttackFun.GoblinStaff),
-    new Sword(EquipId.HandSword,"HandSword",Color.white,1,0,0.3f,AttackFun.Sword,0.5f),
-    new Gum(EquipId.ShotGum,"ShotGum",Color.blue,3,2,0.5f,BulletId.Normal,15,AttackFun.ShotGum),
-    new Sword(EquipId.Meat,"Meat",Color.blue,2,0,0.4f,AttackFun.Sword,0.3f)};
+    { 
+        new Gum(EquipId.OrignalPistol,"OrignalPistol",Color.white,2,0,0.5f,BulletId.Normal,20,AttackFun.Pistol),
+        new Sword(EquipId.BigSword,"BigSword",Color.white,4,0,0.8f,AttackFun.Sword,1),
+        new Gum(EquipId.GoblinGum,"GoblinGum",Color.green,3,1,0.5f,BulletId.Red,8,AttackFun.TwoPistol),
+        new Gum(EquipId.GoblinStaff,"GoblinStaff",Color.green,3,2,0.7f,BulletId.Red,8,AttackFun.GoblinStaff),
+        new Sword(EquipId.HandSword,"HandSword",Color.white,1,0,0.3f,AttackFun.Sword,0.5f),
+        new Gum(EquipId.ShotGum,"ShotGum",Color.blue,3,2,0.5f,BulletId.Normal,15,AttackFun.ShotGum),
+        new Sword(EquipId.Meat,"Meat",Color.blue,2,0,0.3f,AttackFun.Sword,0.5f),
+        new Sword(EquipId.MidSword,"MidSword",Color.white,3,0,0.5f,AttackFun.Sword,0.75f),
+        new Gum(EquipId.Snake,"Snake",Color.blue,3,2,0.4f,BulletId.Snake,20,AttackFun.Snake),
+        new Gum(EquipId.Submachine,"Submachine",Color.blue,3,2,0.4f,BulletId.Blue,30,AttackFun.Submachine)
+    };
     public static BulletData[] bullets =
-         { new BulletData("Normal",0.2f),
-           new BulletData("Red",0.2f)};
+    { 
+        new BulletData("Normal",0.2f),
+        new BulletData("Red",0.2f),
+        new BulletData("Blue",0.2f),
+        new BulletData("Snake",0.2f)
+    };
     //public static DestructionData[] destructions =
     //      { new DestructionData("Box",2),
     //new DestructionData("Box",2),
@@ -115,6 +140,8 @@ public static class Data
     {
         get => LayerMask.NameToLayer("Enemy");
     }
+    public static int Level { get => _level; set => _level = value; }
+
     public static string GetImage(EquipId id)
     {
         return @"Equipments/" + Get(id).Name;
@@ -218,9 +245,38 @@ public static class Data
         EquipId equip;
         do
         {
-            equip = (EquipId)RanInt(1, sizeof(EquipId) - 1);
+            Debug.Log((int)EquipId.End - 1);
+            equip = (EquipId)RanInt(1, (int)EquipId.End-1);
+            if (Random.value < equipRare[Data.Get(equip).Quality]-Level/10f) continue;
         }
         while (equip == EquipId.HandSword);
         return equip;
+    }
+    public static void Clear()
+    {
+        GameObject.Destroy(Data.Player);
+        GameObject.Destroy(Data.StatusUI);
+        GameObject.DontDestroyOnLoad(Data.StatusUI);
+        Data.Level = 0;
+    }
+    public static void Remain()
+    {
+        GameObject.DontDestroyOnLoad(Data.SettingUI);
+        GameObject.DontDestroyOnLoad(Data.Player);
+        GameObject.DontDestroyOnLoad(Data.StatusUI);
+    }
+    public static void Load()
+    {
+        Debug.Log(Data.Player);
+        Debug.Log(Data.StatusUI);
+    }
+    public static int DeltaPrice(EquipId equip)
+    {
+        return (int)(equipRare[Data.Get(equip).Quality] * 100 + Level * 10)/2;
+    }
+    public static int StrongestEnemy()
+    {
+        int enemy = (int)AnimalId.Player + 2 + Level;
+        return enemy > (int)AnimalId.End - 1 ? (int)AnimalId.End - 1 : enemy;
     }
 }

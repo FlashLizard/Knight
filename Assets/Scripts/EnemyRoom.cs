@@ -17,7 +17,7 @@ public class EnemyRoom : Room
     {
         foreach(Transform pos in producePos.transform)
         {
-            string name = ((AnimalId)Data.RanInt(1, sizeof(AnimalId) - 1)).ToString();
+            string name = ((AnimalId)Data.RanInt(1, Data.StrongestEnemy())).ToString();
             Debug.Log(name);
             enemys.Add(Data.Produce(name, pos.position,gameObject));
             EnemyNum++;
@@ -39,7 +39,7 @@ public class EnemyRoom : Room
     private void Update()
     {
         if (End==true || Active == false ) return;
-        if (EnemyNum == 0)
+        if (EnemyNum <= 0)
         {
             allWall.SetActive(false);
             NormalChest.Create(transform.position);

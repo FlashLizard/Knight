@@ -20,7 +20,7 @@ public class MazeBuilder : MonoBehaviour
     {
         float x = 0, y = Data.dy[1];
         int n = Data.RanInt(2, 3),cnt=0;
-        rooms.Add(Create(0,x, y,"EnemyRoom1"));
+        rooms.Add(Create(0,x, y,"EnemyRoom"+Data.RanInt(1,3)));
         for (int i = 1; i <= n; i++)
         {
             while (true)
@@ -38,7 +38,7 @@ public class MazeBuilder : MonoBehaviour
                     else
                     {
                         cnt++;
-                        rooms.Add(Create(j ^ 1, x, y, "EnemyRoom1"));
+                        rooms.Add(Create(j ^ 1, x, y, "EnemyRoom"+ Data.RanInt(1, 3)));
                     }
                     break;
                 }
